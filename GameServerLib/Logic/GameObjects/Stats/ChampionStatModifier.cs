@@ -28,6 +28,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         public StatModifcator Range { get; set; }
         public StatModifcator MoveSpeed { get; set; }
         public StatModifcator GoldPerSecond { get; set; }
+        public StatModifcator CooldownReduction { get; set; }
 
         public ChampionStatModifier()
         {
@@ -50,6 +51,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             Range = new StatModifcator();
             MoveSpeed = new StatModifcator();
             GoldPerSecond = new StatModifcator();
+            CooldownReduction = new StatModifcator();
         }
     }
 }

@@ -295,7 +295,9 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
          */
         public float getCooldown()
         {
-            return SpellData.Cooldown[Level];
+            var cdr = Owner.GetStats().CooldownReduction.Total;
+            _game.PacketNotifier.NotifyDebugMessage(cdr.ToString());
+            return (SpellData.Cooldown[Level] * (1.0f - cdr));
         }
 
         public virtual void levelUp()

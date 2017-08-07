@@ -276,6 +276,10 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             {
                 appendStat(_updatedStats, MasterMask.MM_Four, FieldMask.FM4_MaxHp, HealthPoints.Total);
             }
+            if (CooldownReduction.ApplyStatModificator(modifier.CooldownReduction))
+            {
+                appendStat(_updatedStats, MasterMask.MM_Two, FieldMask.FM2_cdr, CooldownReduction.Total);
+            }
             if (HealthRegeneration.ApplyStatModificator(modifier.HealthRegeneration))
             {
                 appendStat(_updatedStats, MasterMask.MM_Two, FieldMask.FM2_Hp5, HealthRegeneration.Total);
@@ -358,6 +362,11 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             if (HealthPoints.RemoveStatModificator(modifier.HealthPoints))
             {
                 appendStat(_updatedStats, MasterMask.MM_Four, FieldMask.FM4_MaxHp, HealthPoints.Total);
+            }
+
+            if (CooldownReduction.RemoveStatModificator(modifier.CooldownReduction))
+            {
+                appendStat(_updatedStats, MasterMask.MM_Two, FieldMask.FM2_cdr, CooldownReduction.Total);
             }
             if (HealthRegeneration.RemoveStatModificator(modifier.HealthRegeneration))
             {
@@ -558,6 +567,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             appendStat(stats, MasterMask.MM_Two, FieldMask.FM2_Magic_Armor, MagicResist.Total);
             appendStat(stats, MasterMask.MM_Two, FieldMask.FM2_Magic_Pen_Flat, MagicPenetration.FlatBonus);
             appendStat(stats, MasterMask.MM_Two, FieldMask.FM2_Magic_Pen_Pct, MagicPenetration.PercentBonus);
+            appendStat(stats, MasterMask.MM_Two, FieldMask.FM2_cdr, CooldownReduction.PercentBonus);
             appendStat(stats, MasterMask.MM_Four, FieldMask.FM4_MaxMp, ManaPoints.Total);
             appendStat(stats, MasterMask.MM_Four, FieldMask.FM4_exp, Experience);
             appendStat(stats, MasterMask.MM_Four, FieldMask.FM4_Speed, MoveSpeed.Total);

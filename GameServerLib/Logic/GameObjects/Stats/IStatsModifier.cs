@@ -21,5 +21,6 @@
         StatModifcator Range { get; set; }
         StatModifcator MoveSpeed { get; set; }
         StatModifcator GoldPerSecond { get; set; }
+        StatModifcator CooldownReduction { get; set; }
     }
 }
