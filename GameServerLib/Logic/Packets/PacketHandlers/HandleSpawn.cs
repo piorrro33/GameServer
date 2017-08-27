@@ -3,6 +3,7 @@ using LeagueSandbox.GameServer.Core.Logic;
 using LeagueSandbox.GameServer.Logic.Content;
 using LeagueSandbox.GameServer.Logic.Enet;
 using LeagueSandbox.GameServer.Logic.GameObjects;
+using LeagueSandbox.GameServer.Logic.GameObjects.Other.Pathfinder;
 using LeagueSandbox.GameServer.Logic.Players;
 
 namespace LeagueSandbox.GameServer.Logic.Packets.PacketHandlers

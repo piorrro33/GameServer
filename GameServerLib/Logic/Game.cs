@@ -16,6 +16,9 @@ using System.Threading;
 using LeagueSandbox.GameServer.Logic.Scripting.CSharp;
 using Timer = System.Timers.Timer;
 using System.IO;
+using System.Linq;
+using System.Numerics;
+using LeagueSandbox.GameServer.Logic.GameObjects.Other.Pathfinder;
 using LeagueSandbox.GameServer.Logic.Handlers;
 using LeagueSandbox.GameServer.Logic.Packets.PacketHandlers;
 
@@ -93,6 +96,7 @@ namespace LeagueSandbox.GameServer.Core.Logic
 
             ObjectManager = new ObjectManager(this);
             Map = new Map(this);
+            Pathfinder.Initialize();
 
             PacketNotifier = new PacketNotifier(this, _playerManager, _networkIdManager);
             ApiFunctionManager.SetGame(this);

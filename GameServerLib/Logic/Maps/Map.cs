@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using LeagueSandbox.GameServer.Logic.Content;
+using LeagueSandbox.GameServer.Logic.GameObjects.Other.Pathfinder;
 
 namespace LeagueSandbox.GameServer.Logic.Maps
 {
@@ -44,7 +45,7 @@ namespace LeagueSandbox.GameServer.Logic.Maps
             }
 
             AnnouncerEvents = new List<Announce>();
-            CollisionHandler = new CollisionHandler(this);
+            CollisionHandler = new CollisionHandler();
             MapGameScript = GetMapScript(Id);
         }
 

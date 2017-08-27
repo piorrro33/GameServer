@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 
 namespace LeagueSandbox.GameServer.Logic.Content
@@ -275,6 +277,11 @@ namespace LeagueSandbox.GameServer.Logic.Content
         public Vector2 GetSize()
         {
             return new Vector2(MapWidth / 2, MapHeight / 2);
+        }
+
+        public IEnumerable<NavGridCell> GetAllWalkableCells()
+        {
+            return Cells.Where(cell => cell != null && !cell.HasFlag(this, NavigationGridCellFlags.NotPassable));
         }
 
         public bool IsWalkable(Vector2 coords)

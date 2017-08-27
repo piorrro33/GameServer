@@ -3,6 +3,7 @@ using LeagueSandbox.GameServer.Core.Logic;
 using LeagueSandbox.GameServer.Logic.Maps;
 using System.Collections.Generic;
 using System.Diagnostics;
+using LeagueSandbox.GameServer.Logic.GameObjects.Other.Pathfinder;
 
 namespace LeagueSandbox.GameServer.Logic.GameObjects
 {
@@ -11,12 +12,6 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         private Game _game = Program.ResolveDependency<Game>();
 
         private List<GameObject> _objects = new List<GameObject>();
-
-        public CollisionHandler(Map map)
-        {
-            //Pathfinder.setMap(map);
-            // Initialise the pathfinder.
-        }
 
         public void AddObject(GameObject obj)
         {

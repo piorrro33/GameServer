@@ -234,6 +234,8 @@
     <Compile Include="Logic\GameObjects\AttackableUnits\Buildings\ObjBuilding.cs" />
     <Compile Include="Logic\GameObjects\Missiles\ObjMissile.cs" />
     <Compile Include="Logic\GameObjects\Other\Announce.cs" />
+    <Compile Include="Logic\GameObjects\Other\Pathfinder\Node.cs" />
+    <Compile Include="Logic\GameObjects\Other\Pathfinder\Pathfinder.cs" />
     <Compile Include="Logic\GameObjects\Spells\Buff.cs" />
     <Compile Include="Logic\GameObjects\Stats\ChampionStatModifier.cs" />
     <Compile Include="Logic\GameObjects\Stats\IStatsModifier.cs" />
