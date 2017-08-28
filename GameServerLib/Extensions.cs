@@ -99,6 +99,22 @@ namespace LeagueSandbox.GameServer
         {
             return angle * (180.0 / Math.PI);
         }
+
+        public static void ForceSize(this Vector3 v, int size)
+        {
+            if (size <= 2)
+            {
+                v.Z = 0;
+            }
+            if (size <= 1)
+            {
+                v.Y = 0;
+            }
+            if (size == 0)
+            {
+                v.X = 0;
+            }
+        }
     }
 
     public class PairList<TKey, TValue> : List<Pair<TKey, TValue>>

@@ -96,7 +96,7 @@ namespace LeagueSandbox.GameServer.Core.Logic
 
             ObjectManager = new ObjectManager(this);
             Map = new Map(this);
-            Pathfinder.Initialize();
+            Pathfinder.Initialize(Map.NavGrid);
 
             PacketNotifier = new PacketNotifier(this, _playerManager, _networkIdManager);
             ApiFunctionManager.SetGame(this);

@@ -286,14 +286,23 @@ namespace LeagueSandbox.GameServer.Logic.Content
 
         public bool IsWalkable(Vector2 coords)
         {
-            var vector = TranslateToNavGrid(new Vector<float> { X = coords.X, Y = coords.Y });
-            var cell = GetCell((short)vector.X, (short)vector.Y);
-            return cell != null && !cell.HasFlag(this, NavigationGridCellFlags.NotPassable);
+            return IsWalkableCell(TranslateToNavGrid(new Vector<float> {X = coords.X, Y = coords.Y}));
         }
 
         public bool IsWalkable(float x, float y)
         {
             return IsWalkable(new Vector2(x, y));
+        }
+
+        public bool IsWalkableCell(Vector<float> coords)
+        {
+            var cell = GetCell((short)coords.X, (short)coords.Y);
+            return cell != null && !cell.HasFlag(this, NavigationGridCellFlags.NotPassable);
+        }
+
+        public bool IsWalkableCell(float x, float y)
+        {
+            return IsWalkableCell(new Vector<float> {X = x, Y = y});
         }
 
         public bool IsBrush(Vector2 coords)
@@ -333,12 +342,16 @@ namespace LeagueSandbox.GameServer.Logic.Content
 
         public float CastRaySqr(Vector2 origin, Vector2 destination, bool inverseRay = false)
         {
-            var x1 = origin.X;
-            var y1 = origin.Y;
-            var x2 = destination.X;
-            var y2 = destination.Y;
+            var originCell = TranslateToNavGrid(new Vector<float> {X = origin.X, Y = origin.Y});
+            var destCell = TranslateToNavGrid(new Vector<float> {X = destination.X, Y = destination.Y});
+            var x1 = originCell.X;
+            var y1 = originCell.Y;
+            var x2 = destCell.X;
+            var y2 = destCell.Y;
+            origin.X = x1;
+            origin.Y = x2;
 
-            if (x1 < 0 || y1 < 0 || x1 >= MapWidth || y1 >= MapHeight)
+            if (x1 < 0 || y1 < 0 || x1 >= XCellCount || y1 >= YCellCount)
             {
                 return 0.0f;
             }
@@ -356,7 +369,7 @@ namespace LeagueSandbox.GameServer.Logic.Content
             int i;
             for (i = 0; i <= il; i++)
             {
-                if (IsWalkable(x1, y1) == inverseRay)
+                if (IsWalkableCell(x1, y1) == inverseRay)
                 {
                     break;
                 }

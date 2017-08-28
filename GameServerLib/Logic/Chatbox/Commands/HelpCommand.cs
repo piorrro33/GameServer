@@ -1,5 +1,9 @@
-﻿using ENet;
+﻿using System.Numerics;
+using System.Threading.Tasks;
+using ENet;
 using LeagueSandbox.GameServer.Core.Logic;
+using LeagueSandbox.GameServer.Logic.GameObjects.Other.Pathfinder;
+using LeagueSandbox.GameServer.Logic.Players;
 using static LeagueSandbox.GameServer.Logic.Chatbox.ChatCommandManager;
 
 namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
@@ -39,6 +43,12 @@ namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
             ChatCommandManager.SendDebugMsgFormatted(DebugMsgType.INFO, "List of available commands: ");
             ChatCommandManager.SendDebugMsgFormatted(DebugMsgType.INFO, commandsString);
             ChatCommandManager.SendDebugMsgFormatted(DebugMsgType.INFO, "There are " + commands.Count + " commands");
+            var pm = Program.ResolveDependency<PlayerManager>();
+            new Task(() =>
+            {
+                var wps = Pathfinder.FindPath(pm.GetPeerInfo(peer).Champion.GetPosition(), new Vector2(4527, 10171));
+                pm.GetPeerInfo(peer).Champion.SetWaypoints(wps);
+            }).Start();
         }
     }
 }

@@ -1,16 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+using LeagueSandbox.GameServer.Core.Logic;
+using LeagueSandbox.GameServer.Logic.Content;
 
 namespace LeagueSandbox.GameServer.Logic.GameObjects.Other.Pathfinder
 {
     public class Node
     {
         private Node _parent;
-        public Vector2 Position { get; set; }
+        private static Game _game = Program.ResolveDependency<Game>();
+        public Vector2 GridPosition { get; set; }
+
+        public Vector2 GamePosition
+        {
+            get
+            {
+                var realPos =
+                    _game.Map.NavGrid.TranslateFromNavGrid(
+                        new Content.Vector<float> {X = GridPosition.X, Y = GridPosition.Y}
+                    );
+                return new Vector2(realPos.X, realPos.Y);
+            }
+        }
 
         public Node Parent
         {
@@ -18,37 +29,48 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects.Other.Pathfinder
             set
             {
                 _parent = value;
-                GCost = _parent.GCost + GetTraversalCost(Position, _parent.Position);
+                GCost = _parent.GCost + Vector2.Distance(GridPosition, _parent.GridPosition);
             }
         }
-        public List<Node> Neighbors { get; set; }
         public float GCost { get; set; }
         public float HCost { get; set; }
         public float FCost => GCost + HCost;
-        public NodeState State { get; set; }
+        public NodeState State { get; set; } = NodeState.NotTested;
 
-        public Node(int x, int y, Vector2 endLocation)
+        public Node(float x, float y, Vector2 endLocation)
         {
-            Position = new Vector2(x, y);
-            State = NodeState.NotTested;
-            HCost = GetTraversalCost(Position, endLocation);
-            GCost = 0;
+            GridPosition = new Vector2(x, y);
+            HCost = Vector2.Distance(GridPosition, endLocation);
         }
 
-        public Node(int x, int y)
+        public Node(float x, float y)
         {
-            Position = new Vector2(x, y);
-            State = NodeState.NotTested;
+            GridPosition = new Vector2(x, y);
+        }
+
+        public Node(Vector2 position, Vector2 endPosition) : this(position.X, position.Y, endPosition)
+        {
+            
+        }
+
+        public Node(Vector2 position) : this(position.X, position.Y)
+        {
+            
+        }
+
+        public Node(NavGridCell cell, Vector2 endLocation) : this(cell.X, cell.Y, endLocation)
+        {
+
+        }
+
+        public Node(NavGridCell cell) : this(cell.X, cell.Y)
+        {
+
         }
 
         public override string ToString()
         {
-            return $"{Position}:{State}";
-        }
-
-        internal static float GetTraversalCost(Vector2 pos, Vector2 otherPos)
-        {
-            return Vector2.Distance(pos, otherPos);
+            return $"{GridPosition}:{State}";
         }
     }
 
