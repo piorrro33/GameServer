@@ -124,7 +124,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
         public Unit(
             string model,
-            Stats stats,
+            Stats s,
             int collisionRadius = 40,
             float x = 0,
             float y = 0,
@@ -135,17 +135,29 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         {
             BuffGameScriptControllers = new List<BuffGameScriptController>();
             AppliedBuffs = new Dictionary<byte, Buff>();
-            this.stats = stats;
+            stats = s;
             Model = model;
-            CharData = _game.Config.ContentManager.GetCharData(model);
+            CharData = _game.Config.ContentManager.GetCharData(Model);
             stats.LoadStats(CharData);
             AutoAttackDelay = 0;
             AutoAttackProjectileSpeed = 500;
             IsMelee = CharData.IsMelee;
-            CollisionRadius = CharData.PathfindingCollisionRadius;
-            stats.CurrentMana = stats.ManaPoints.Total;
-            stats.CurrentHealth = stats.HealthPoints.Total;
+            stats.CurrentMana = s.ManaPoints.Total;
+            stats.CurrentHealth = s.HealthPoints.Total;
             stats.AttackSpeedMultiplier.BaseValue = 1.0f;
+
+            if (!CharData.PathfindingCollisionRadius.Equals(-1))
+            {
+                CollisionRadius = CharData.PathfindingCollisionRadius;
+            }
+            else if (collisionRadius != 0)
+            {
+                CollisionRadius = collisionRadius;
+            }
+            else
+            {
+                CollisionRadius = 40;
+            }
         }
 
         public override void OnAdded()
