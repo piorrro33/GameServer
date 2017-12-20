@@ -473,6 +473,8 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         {
             base.DealDamageTo(target, damage, type, source, isCrit);
 
+            ApiEventManager.OnAutoAttackHit.Publish(this);
+
             var cTarget = target as Champion;
             if (cTarget == null)
                 return;
