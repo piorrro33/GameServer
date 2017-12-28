@@ -72,6 +72,11 @@ namespace LeagueSandbox.GameServer.Logic.API
             b.TargetUnit.RemoveBuffSlot(b);
             _game.PacketNotifier.NotifyRemoveBuff(b.TargetUnit, b.Name, b.Slot);
         }
+        
+        public static void ChangeSpell(Unit target, byte slot, Spell spell)
+        {
+            _game.PacketNotifier.NotifyChangeSpell(target, slot, spell);
+        }
 
         public static void SetGameObjectVisibility(GameObject gameObject, bool visibility)
         {

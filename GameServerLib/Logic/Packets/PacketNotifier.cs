@@ -469,5 +469,11 @@ namespace LeagueSandbox.GameServer.Logic.Packets
                                 travelTime);
             _game.PacketHandlerManager.broadcastPacketVision(u, dash, Channel.CHL_S2C);
         }
+
+        public void NotifyChangeSpell(Unit u, byte slot, Spell spell)
+        {
+            var cs = new ChangeSpell(u, slot, spell.SpellName);
+            _game.PacketHandlerManager.broadcastPacket(cs, Channel.CHL_S2C);
+        }
     }
 }
