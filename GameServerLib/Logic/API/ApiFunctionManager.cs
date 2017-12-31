@@ -71,6 +71,7 @@ namespace LeagueSandbox.GameServer.Logic.API
         {
             b.TargetUnit.RemoveBuffSlot(b);
             _game.PacketNotifier.NotifyRemoveBuff(b.TargetUnit, b.Name, b.Slot);
+            b.TargetUnit.RemoveBuffSlot(b);
         }
 
         public static void SetGameObjectVisibility(GameObject gameObject, bool visibility)

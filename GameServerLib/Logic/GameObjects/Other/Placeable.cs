@@ -9,12 +9,13 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
         public Placeable(
             Unit owner,
+            Stats stats,
             float x,
             float y,
             string model,
             string name,
             uint netId = 0
-        ) : base(model, new Stats(), 40, x, y, 0, netId)
+        ) : base(model, stats, 40, x, y, 0, netId)
         {
             SetTeam(owner.Team);
 
