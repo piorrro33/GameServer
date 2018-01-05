@@ -323,27 +323,25 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             }
         }
 
-        public void SetCooldown(byte slot, float newCd)
+        public static void SetCooldown(Spell spell, float newCd)
         {
-            var targetSpell = Owner.Spells[slot];
-
             if (newCd <= 0)
             {
-                _game.PacketNotifier.NotifySetCooldown(Owner, slot, 0, 0);
-                targetSpell.state = SpellState.STATE_READY;
-                targetSpell.CurrentCooldown = 0;
+                _game.PacketNotifier.NotifySetCooldown(spell.Owner, spell.Slot, 0, 0);
+                spell.state = SpellState.STATE_READY;
+                spell.CurrentCooldown = 0;
             }
             else
             {
-                _game.PacketNotifier.NotifySetCooldown(Owner, slot, newCd, targetSpell.getCooldown());
-                targetSpell.state = SpellState.STATE_COOLDOWN;
-                targetSpell.CurrentCooldown = newCd;
+                _game.PacketNotifier.NotifySetCooldown(spell.Owner, spell.Slot, newCd, spell.getCooldown());
+                spell.state = SpellState.STATE_COOLDOWN;
+                spell.CurrentCooldown = newCd;
             }
         }
 
-        public void LowerCooldown(byte slot, float lowerValue)
+        public static void LowerCooldown(Spell spell, float lowerValue)
         {
-            SetCooldown(slot, Owner.Spells[slot].CurrentCooldown - lowerValue);
+            SetCooldown(spell, spell.CurrentCooldown - lowerValue);
         }
     }
 }
