@@ -42,7 +42,7 @@ namespace LeagueSandbox.GameServer.Logic
             var temp = GetObjects();
             foreach (var obj in temp.Values)
             {
-                if (obj.isToRemove())
+                if (obj.ToBeRemoved)
                 {
                     if (obj.AttackerCount == 0)
                         RemoveObject(obj);
@@ -105,10 +105,10 @@ namespace LeagueSandbox.GameServer.Logic
                     }
                 }
 
-                if (u.GetStats().GetUpdatedStats().Count > 0)
+                if (u.Stats.GetUpdatedStats().Count > 0)
                 {
                     _game.PacketNotifier.NotifyUpdatedStats(u, false);
-                    u.GetStats().ClearUpdatedStats();
+                    u.Stats.ClearUpdatedStats();
                 }
 
                 if (u.IsModelUpdated)
@@ -117,10 +117,10 @@ namespace LeagueSandbox.GameServer.Logic
                     u.IsModelUpdated = false;
                 }
 
-                if (obj.isMovementUpdated())
+                if (obj.MovementUpdated)
                 {
                     _game.PacketNotifier.NotifyMovement(obj);
-                    obj.clearMovementUpdated();
+                    obj.MovementUpdated = false;
                 }
             }
         }

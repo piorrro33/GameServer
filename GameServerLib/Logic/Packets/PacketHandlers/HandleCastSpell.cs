@@ -42,7 +42,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketHandlers
             {
                 return false;
             }
-            return s.cast(spell.x, spell.y, spell.x2, spell.y2, TargetUnit);
+            return s.Cast(spell.x, spell.y, spell.x2, spell.y2, TargetUnit);
         }
     }
 }

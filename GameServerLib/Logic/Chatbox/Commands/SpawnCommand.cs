@@ -45,10 +45,10 @@ namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
                 var super = new Minion(MinionSpawnType.MINION_TYPE_SUPER, MinionSpawnPosition.SPAWN_BLUE_BOT);
 
                 const int x = 400;
-                caster.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
-                cannon.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
-                melee.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
-                super.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                caster.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                cannon.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                melee.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                super.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
 
                 caster.PauseAI(true);
                 cannon.PauseAI(true);
@@ -81,10 +81,10 @@ namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
                 var super = new Minion(MinionSpawnType.MINION_TYPE_SUPER, MinionSpawnPosition.SPAWN_RED_BOT);
 
                 const int x = 400;
-                caster.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
-                cannon.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
-                melee.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
-                super.setPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                caster.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                cannon.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                melee.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
+                super.SetPosition(champion.X + random.Next(-x, x), champion.Y + random.Next(-x, x));
 
                 caster.PauseAI(true);
                 cannon.PauseAI(true);

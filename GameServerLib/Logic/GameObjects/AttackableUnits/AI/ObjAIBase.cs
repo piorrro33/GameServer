@@ -17,7 +17,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         {
             if(!string.IsNullOrEmpty(model))
             {
-                AASpellData = _game.Config.ContentManager.GetSpellData(model + "BasicAttack");
+                AASpellData = Game.Config.ContentManager.GetSpellData(model + "BasicAttack");
                 AutoAttackDelay = AASpellData.CastFrame / 30.0f;
                 AutoAttackProjectileSpeed = AASpellData.MissileSpeed;
             }

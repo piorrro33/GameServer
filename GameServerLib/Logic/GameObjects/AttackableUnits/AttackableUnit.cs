@@ -19,18 +19,18 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         {
             float defense = 0;
             float regain = 0;
-            var attackerStats = attacker.GetStats();
+            var attackerStats = attacker.Stats;
 
             switch (type)
             {
                 case DamageType.DAMAGE_TYPE_PHYSICAL:
-                    defense = GetStats().Armor.Total;
+                    defense = Stats.Armor.Total;
                     defense = (1 - attackerStats.ArmorPenetration.PercentBonus) * defense -
                               attackerStats.ArmorPenetration.FlatBonus;
 
                     break;
                 case DamageType.DAMAGE_TYPE_MAGICAL:
-                    defense = GetStats().MagicPenetration.Total;
+                    defense = Stats.MagicPenetration.Total;
                     defense = (1 - attackerStats.MagicPenetration.PercentBonus) * defense -
                               attackerStats.MagicPenetration.FlatBonus;
                     break;
@@ -82,22 +82,22 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
             ApiEventManager.OnUnitDamageTaken.Publish(this);
 
-            GetStats().CurrentHealth = Math.Max(0.0f, GetStats().CurrentHealth - damage);
-            if (!IsDead && GetStats().CurrentHealth <= 0)
+            Stats.CurrentHealth = Math.Max(0.0f, Stats.CurrentHealth - damage);
+            if (!IsDead && Stats.CurrentHealth <= 0)
             {
                 IsDead = true;
-                die(attacker);
+                Die(attacker);
             }
 
-            _game.PacketNotifier.NotifyDamageDone(attacker, this, damage, type, damageText);
-            _game.PacketNotifier.NotifyUpdatedStats(this, false);
+            Game.PacketNotifier.NotifyDamageDone(attacker, this, damage, type, damageText);
+            Game.PacketNotifier.NotifyUpdatedStats(this, false);
 
             // Get health from lifesteal/spellvamp
             if (regain > 0)
             {
                 attackerStats.CurrentHealth = Math.Min(attackerStats.HealthPoints.Total,
                     attackerStats.CurrentHealth + regain * damage);
-                _game.PacketNotifier.NotifyUpdatedStats(attacker, false);
+                Game.PacketNotifier.NotifyUpdatedStats(attacker, false);
             }
         }
 

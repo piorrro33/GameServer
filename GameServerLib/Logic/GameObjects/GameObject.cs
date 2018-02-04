@@ -14,7 +14,7 @@ namespace LeagueSandbox.GameServer.Logic
     public class GameObject : Target
     {
         public uint NetId { get; private set; }
-        protected float xvector, yvector;
+        protected float XVector, YVector;
 
         /// <summary>
         /// Current target the object running to (can be coordinates or an object)
@@ -23,32 +23,37 @@ namespace LeagueSandbox.GameServer.Logic
 
         public List<Vector2> Waypoints { get; private set; }
         public int CurWaypoint { get; private set; }
-        public TeamId Team { get; protected set; }
+        private TeamId _team;
 
-        public void SetTeam(TeamId team)
+        public TeamId Team
         {
-            _visibleByTeam[Team] = false;
-            Team = team;
-            _visibleByTeam[Team] = true;
-            if (_game.IsRunning)
+            get { return _team; }
+            internal set
             {
-                var p = new SetTeam(this as Unit, team);
-                _game.PacketHandlerManager.broadcastPacket(p, Channel.CHL_S2C);
+                _visibleByTeam[_team] = false;
+                _team = value;
+                _visibleByTeam[_team] = true;
+                
+                if (!Game.IsRunning)
+                    return;
+                
+                var p = new SetTeam(this as Unit, value);
+                Game.PacketHandlerManager.broadcastPacket(p, Channel.CHL_S2C);
             }
         }
 
-        protected bool movementUpdated;
-        protected bool toRemove;
+        public bool MovementUpdated { get; set; }
+        public bool ToBeRemoved { get; set; }
         public int AttackerCount { get; private set; }
         public float CollisionRadius { get; set; }
-        protected Vector2 _direction;
+        protected Vector2 Direction;
         public float VisionRadius { get; protected set; }
         public bool IsDashing { get; protected set; }
         public override bool IsSimpleTarget { get { return false; } }
-        protected float _dashSpeed;
-        private Dictionary<TeamId, bool> _visibleByTeam;
-        protected Game _game = Program.ResolveDependency<Game>();
-        protected NetworkIdManager _networkIdManager = Program.ResolveDependency<NetworkIdManager>();
+        protected float DashSpeed { get; set; }
+        private readonly Dictionary<TeamId, bool> _visibleByTeam;
+        protected readonly Game Game = Program.ResolveDependency<Game>();
+        protected NetworkIdManager NetworkIdManager = Program.ResolveDependency<NetworkIdManager>();
 
         public GameObject(float x, float y, int collisionRadius, int visionRadius = 0, uint netId = 0) : base(x, y)
         {
@@ -58,7 +63,7 @@ namespace LeagueSandbox.GameServer.Logic
             }
             else
             {
-                NetId = _networkIdManager.GetNewNetID(); // Let the base class (this one) asign a netId
+                NetId = NetworkIdManager.GetNewNetID(); // Let the base class (this one) asign a netId
             }
             Target = null;
             CollisionRadius = collisionRadius;
@@ -73,23 +78,23 @@ namespace LeagueSandbox.GameServer.Logic
             }
 
             Team = TeamId.TEAM_NEUTRAL;
-            movementUpdated = false;
-            toRemove = false;
+            MovementUpdated = false;
+            ToBeRemoved = false;
             AttackerCount = 0;
             IsDashing = false;
         }
 
         public virtual void OnAdded()
         {
-            _game.Map.CollisionHandler.AddObject(this);
+            Game.Map.CollisionHandler.AddObject(this);
         }
 
         public virtual void OnRemoved()
         {
-            _game.Map.CollisionHandler.RemoveObject(this);
+            Game.Map.CollisionHandler.RemoveObject(this);
         }
 
-        public virtual void onCollision(GameObject collider) { }
+        public virtual void OnCollision(GameObject collider) { }
 
         /// <summary>
         /// Moves the object depending on its target, updating its coordinate.
@@ -99,7 +104,7 @@ namespace LeagueSandbox.GameServer.Logic
         {
             if (Target == null)
             {
-                _direction = new Vector2();
+                Direction = new Vector2();
                 return;
             }
 
@@ -107,22 +112,24 @@ namespace LeagueSandbox.GameServer.Logic
             var cur = new Vector2(X, Y); //?
 
             var goingTo = to - cur;
-            _direction = Vector2.Normalize(goingTo);
-            if (float.IsNaN(_direction.X) || float.IsNaN(_direction.Y))
+            Direction = Vector2.Normalize(goingTo);
+            if (float.IsNaN(Direction.X) || float.IsNaN(Direction.Y))
             {
-                _direction = new Vector2(0, 0);
+                Direction = new Vector2(0, 0);
             }
 
-            var moveSpeed = getMoveSpeed();
+            // Replaced GetMoveSpeed() with its return value
+            // TODO: ???
+            var moveSpeed = 0.0f;
             if (IsDashing)
             {
-                moveSpeed = _dashSpeed;
+                moveSpeed = DashSpeed;
             }
 
             var deltaMovement = (moveSpeed) * 0.001f * diff;
 
-            var xx = _direction.X * deltaMovement;
-            var yy = _direction.Y * deltaMovement;
+            var xx = Direction.X * deltaMovement;
+            var yy = Direction.Y * deltaMovement;
 
             X += xx;
             Y += yy;
@@ -143,7 +150,7 @@ namespace LeagueSandbox.GameServer.Logic
                         var u = this as Unit;
 
                         var animList = new List<string>();
-                        _game.PacketNotifier.NotifySetAnimation(u, animList);
+                        Game.PacketNotifier.NotifySetAnimation(u, animList);
                     }
 
                     Target = null;
@@ -166,32 +173,28 @@ namespace LeagueSandbox.GameServer.Logic
 
         public void CalculateVector(float xtarget, float ytarget)
         {
-            xvector = xtarget - X;
-            yvector = ytarget - Y;
+            XVector = xtarget - X;
+            YVector = ytarget - Y;
 
-            if (xvector == 0 && yvector == 0)
+            if (XVector == 0 && YVector == 0)
                 return;
 
-            var toDivide = Math.Abs(xvector) + Math.Abs(yvector);
-            xvector /= toDivide;
-            yvector /= toDivide;
+            var toDivide = Math.Abs(XVector) + Math.Abs(YVector);
+            XVector /= toDivide;
+            YVector /= toDivide;
         }
 
         public virtual void update(float diff)
         {
             Move(diff);
         }
-        public virtual float getMoveSpeed()
-        {
-            return 0;
-        }
 
         public void SetWaypoints(List<Vector2> newWaypoints)
         {
             Waypoints = newWaypoints;
 
-            setPosition(Waypoints[0].X, Waypoints[0].Y);
-            movementUpdated = true;
+            SetPosition(Waypoints[0].X, Waypoints[0].Y);
+            MovementUpdated = true;
             if (Waypoints.Count == 1)
             {
                 Target = null;
@@ -202,27 +205,12 @@ namespace LeagueSandbox.GameServer.Logic
             CurWaypoint = 1;
         }
 
-        public bool isMovementUpdated()
+        public virtual void SetToBeRemoved()
         {
-            return movementUpdated;
+            ToBeRemoved = true;
         }
 
-        public void clearMovementUpdated()
-        {
-            movementUpdated = false;
-        }
-
-        public bool isToRemove()
-        {
-            return toRemove;
-        }
-
-        public virtual void setToRemove()
-        {
-            toRemove = true;
-        }
-
-        public virtual void setPosition(float x, float y)
+        public virtual void SetPosition(float x, float y)
         {
             X = x;
             Y = y;
@@ -230,7 +218,7 @@ namespace LeagueSandbox.GameServer.Logic
             Target = null;
         }
 
-        public virtual void setPosition(Vector2 vec)
+        public virtual void SetPosition(Vector2 vec)
         {
             X = vec.X;
             Y = vec.Y;
@@ -239,7 +227,7 @@ namespace LeagueSandbox.GameServer.Logic
 
         public virtual float GetZ()
         {
-            return _game.Map.NavGrid.GetHeightAtLocation(X, Y);
+            return Game.Map.NavGrid.GetHeightAtLocation(X, Y);
         }
 
         public bool IsCollidingWith(GameObject o)
@@ -247,11 +235,12 @@ namespace LeagueSandbox.GameServer.Logic
             return GetDistanceToSqr(o) < (CollisionRadius + o.CollisionRadius) * (CollisionRadius + o.CollisionRadius);
         }
 
-        public void incrementAttackerCount()
+        public void IncrementAttackerCount()
         {
             ++AttackerCount;
         }
-        public void decrementAttackerCount()
+        
+        public void DecrementAttackerCount()
         {
             --AttackerCount;
         }
@@ -266,7 +255,7 @@ namespace LeagueSandbox.GameServer.Logic
             _visibleByTeam[team] = visible;
             if (this is Unit)
             {
-                _game.PacketNotifier.NotifyUpdatedStats(this as Unit, false);
+                Game.PacketNotifier.NotifyUpdatedStats(this as Unit, false);
             }
         }
 
@@ -274,7 +263,7 @@ namespace LeagueSandbox.GameServer.Logic
         {
             // TODO: Take into account the rest of the arguments
             IsDashing = true;
-            _dashSpeed = dashSpeed;
+            DashSpeed = dashSpeed;
             Target = t;
             Waypoints.Clear();
         }

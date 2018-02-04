@@ -12,6 +12,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         public Unit Owner { get; private set; }
         public int ProjectileId { get; private set; }
         public SpellData SpellData { get; private set; }
+
         protected float _moveSpeed;
         protected Spell _originSpell;
         private Logger _logger = Program.ResolveDependency<Logger>();
@@ -29,7 +30,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             uint netId = 0
         ) : base(x, y, collisionRadius, 0, netId)
         {
-            SpellData = _game.Config.ContentManager.GetSpellData(projectileName);
+            SpellData = Game.Config.ContentManager.GetSpellData(projectileName);
             _originSpell = originSpell;
             _moveSpeed = moveSpeed;
             Owner = owner;
@@ -45,27 +46,27 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
             if (!target.IsSimpleTarget)
             {
-                ((GameObject)target).incrementAttackerCount();
+                ((GameObject)target).IncrementAttackerCount();
             }
 
-            owner.incrementAttackerCount();
+            owner.IncrementAttackerCount();
         }
 
         public override void update(float diff)
         {
             if (Target == null)
             {
-                setToRemove();
+                SetToBeRemoved();
                 return;
             }
 
             base.update(diff);
         }
 
-        public override void onCollision(GameObject collider)
+        public override void OnCollision(GameObject collider)
         {
-            base.onCollision(collider);
-            if (Target != null && Target.IsSimpleTarget && !isToRemove())
+            base.OnCollision(collider);
+            if (Target != null && Target.IsSimpleTarget && !ToBeRemoved)
             {
                 CheckFlagsForUnit(collider as Unit);
             }
@@ -78,7 +79,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             }
         }
 
-        public override float getMoveSpeed()
+        public float GetMoveSpeed()
         {
             return _moveSpeed;
         }
@@ -137,7 +138,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
                 var attackableUnit = unit as AttackableUnit;
                 if (attackableUnit != null)
                 {
-                    _originSpell.applyEffects(attackableUnit, this);
+                    _originSpell.ApplyEffects(attackableUnit, this);
                 }
             }
             else
@@ -147,25 +148,25 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
                 { // Autoguided spell
                     if (_originSpell != null)
                     {
-                        _originSpell.applyEffects(u, this);
+                        _originSpell.ApplyEffects(u, this);
                     }
                     else
                     { // auto attack
                         Owner.AutoAttackHit(u);
-                        setToRemove();
+                        SetToBeRemoved();
                     }
                 }
             }
         }
 
-        public override void setToRemove()
+        public override void SetToBeRemoved()
         {
             if (Target != null && !Target.IsSimpleTarget)
-                (Target as GameObject).decrementAttackerCount();
+                (Target as GameObject).DecrementAttackerCount();
 
-            Owner.decrementAttackerCount();
-            base.setToRemove();
-            _game.PacketNotifier.NotifyProjectileDestroy(this);
+            Owner.DecrementAttackerCount();
+            base.SetToBeRemoved();
+            Game.PacketNotifier.NotifyProjectileDestroy(this);
         }
     }
 }

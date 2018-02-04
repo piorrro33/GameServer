@@ -14,9 +14,9 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketDefinitions.S2C
             var stats = new Dictionary<MasterMask, Dictionary<FieldMask, float>>();
 
             if (partial)
-                stats = u.GetStats().GetUpdatedStats();
+                stats = u.Stats.GetUpdatedStats();
             else
-                stats = u.GetStats().GetAllStats();
+                stats = u.Stats.GetAllStats();
             var orderedStats = stats.OrderBy(x => x.Key);
 
             buffer.Write(Environment.TickCount); // syncID
@@ -37,13 +37,13 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketDefinitions.S2C
                 foreach (var stat in orderedGroup)
                 {
                     fieldMask |= (uint)stat.Key;
-                    size += u.GetStats().getSize(group.Key, stat.Key);
+                    size += u.Stats.getSize(group.Key, stat.Key);
                 }
                 buffer.Write((uint)fieldMask);
                 buffer.Write((byte)size);
                 foreach (var stat in orderedGroup)
                 {
-                    size = u.GetStats().getSize(group.Key, stat.Key);
+                    size = u.Stats.getSize(group.Key, stat.Key);
                     switch (size)
                     {
                         case 1:

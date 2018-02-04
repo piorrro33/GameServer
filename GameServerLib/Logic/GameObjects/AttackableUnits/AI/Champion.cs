@@ -12,11 +12,13 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 {
     public class Champion : ObjAIBase
     {
-        public Shop Shop { get; protected set; }
         public float RespawnTimer { get; private set; }
         public float ChampionGoldFromMinions { get; set; }
-        public RuneCollection RuneList { get; set; }
-        public Dictionary<short, Spell> Spells { get; private set; } = new Dictionary<short, Spell>();
+        public RuneCollection RuneList { get; }
+        public Dictionary<short, Spell> Spells { get; }
+        private Shop Shop { get; }
+        
+        public int KillDeathCounter { get; internal set; }
 
         private short _skillPoints;
         public int Skin { get; set; }
@@ -24,12 +26,12 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         /// <summary>
         /// Player number ordered by the config file.
         /// </summary>
-        private uint _playerId;
+        private readonly uint _playerId;
         /// <summary>
         /// Player number in the team ordered by the config file.
         /// Used in nowhere but to set spawnpoint at the game start.
         /// </summary>
-        private uint _playerTeamSpecialId;
+        private readonly uint _playerTeamSpecialId;
         private uint _playerHitId;
 
         public Champion(string model,
@@ -43,12 +45,13 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             _playerId = playerId;
             _playerTeamSpecialId = playerTeamSpecialId;
             RuneList = runeList;
+            Spells = new Dictionary<short, Spell>();
 
             Inventory = InventoryManager.CreateInventory(this);
             Shop = Shop.CreateShop(this);
 
             Stats.Gold = 475.0f;
-            Stats.GoldPerSecond.BaseValue = _game.Map.MapGameScript.GoldPerSecond;
+            Stats.GoldPerSecond.BaseValue = Game.Map.MapGameScript.GoldPerSecond;
             Stats.SetGeneratingGold(false);
 
             //TODO: automaticaly rise spell levels with CharData.SpellLevelsUp
@@ -77,11 +80,11 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
                 {
                     var spell = new Spell(this, CharData.ExtraSpells[i], (byte)(i + 45));
                     Spells[(byte)(i + 45)] = spell;
-                    spell.levelUp();
+                    spell.LevelUp();
                 }
             }
-            Spells[4].levelUp();
-            Spells[5].levelUp();
+            Spells[4].LevelUp();
+            Spells[5].LevelUp();
         }
         private string GetPlayerIndex()
         {
@@ -91,14 +94,14 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         public override void OnAdded()
         {
             base.OnAdded();
-            _game.ObjectManager.AddChampion(this);
-            _game.PacketNotifier.NotifyChampionSpawned(this, Team);
+            Game.ObjectManager.AddChampion(this);
+            Game.PacketNotifier.NotifyChampionSpawned(this, Team);
         }
 
         public override void OnRemoved()
         {
             base.OnRemoved();
-            _game.ObjectManager.RemoveChampion(this);
+            Game.ObjectManager.RemoveChampion(this);
         }
 
         public int GetTeamSize()
@@ -106,7 +109,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             var blueTeamSize = 0;
             var purpTeamSize = 0;
 
-            foreach (var player in _game.Config.Players.Values)
+            foreach (var player in Game.Config.Players.Values)
             {
                 if (player.Team.ToLower() == "blue")
                 {
@@ -119,9 +122,9 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             }
 
             var playerIndex = GetPlayerIndex();
-            if (_game.Config.Players.ContainsKey(playerIndex))
+            if (Game.Config.Players.ContainsKey(playerIndex))
             {
-                switch (_game.Config.Players[playerIndex].Team.ToLower())
+                switch (Game.Config.Players[playerIndex].Team.ToLower())
                 {
                     case "blue":
                         return blueTeamSize;
@@ -162,7 +165,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         }
         public Vector2 GetSpawnPosition()
         {
-            var config = _game.Config;
+            var config = Game.Config;
             var playerIndex = GetPlayerIndex();
             var playerTeam = "";
             var teamSize = GetTeamSize();
@@ -188,7 +191,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
         public Vector2 GetRespawnPosition()
         {
-            var config = _game.Config;
+            var config = Game.Config;
             var playerIndex = GetPlayerIndex();
 
             if (config.Players.ContainsKey(playerIndex))
@@ -197,8 +200,8 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             }
             var coords = new Vector2
             {
-                X = _game.Map.MapGameScript.GetRespawnLocation(Team).X,
-                Y = _game.Map.MapGameScript.GetRespawnLocation(Team).Y
+                X = Game.Map.MapGameScript.GetRespawnLocation(Team).X,
+                Y = Game.Map.MapGameScript.GetRespawnLocation(Team).Y
             };
             return new Vector2(coords.X, coords.Y);
         }
@@ -230,7 +233,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             if (s == null)
                 return null;
 
-            s.levelUp();
+            s.LevelUp();
             _skillPoints--;
 
             return s;
@@ -242,7 +245,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
             if (!IsDead && MoveOrder == MoveOrder.MOVE_ORDER_ATTACKMOVE && TargetUnit != null)
             {
-                var objects = _game.ObjectManager.GetObjects();
+                var objects = Game.ObjectManager.GetObjects();
                 var distanceToTarget = 9000000.0f;
                 AttackableUnit nextTarget = null;
                 var range = Math.Max(Stats.Range.Total, DETECT_RANGE);
@@ -264,14 +267,14 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
                 if (nextTarget != null)
                 {
                     TargetUnit = nextTarget;
-                    _game.PacketNotifier.NotifySetTarget(this, nextTarget);
+                    Game.PacketNotifier.NotifySetTarget(this, nextTarget);
                 }
             }
 
-            if (!Stats.IsGeneratingGold() && _game.GameTime >= _game.Map.MapGameScript.FirstGoldTime)
+            if (!Stats.IsGeneratingGold() && Game.GameTime >= Game.Map.MapGameScript.FirstGoldTime)
             {
                 Stats.SetGeneratingGold(true);
-                _logger.LogCoreInfo("Generating Gold!");
+                Logger.LogCoreInfo("Generating Gold!");
             }
 
             if (RespawnTimer > 0)
@@ -286,12 +289,12 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             var isLevelup = LevelUp();
             if (isLevelup)
             {
-                _game.PacketNotifier.NotifyLevelUp(this);
-                _game.PacketNotifier.NotifyUpdatedStats(this, false);
+                Game.PacketNotifier.NotifyLevelUp(this);
+                Game.PacketNotifier.NotifyUpdatedStats(this, false);
             }
 
             foreach (var s in Spells.Values)
-                s.update(diff);
+                s.Update(diff);
 
             if (_championHitFlagTimer > 0)
             {
@@ -306,10 +309,10 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         public void Respawn()
         {
             var spawnPos = GetRespawnPosition();
-            setPosition(spawnPos.X, spawnPos.Y);
-            _game.PacketNotifier.NotifyChampionRespawn(this);
-            GetStats().CurrentHealth = GetStats().HealthPoints.Total;
-            GetStats().CurrentMana = GetStats().HealthPoints.Total;
+            SetPosition(spawnPos.X, spawnPos.Y);
+            Game.PacketNotifier.NotifyChampionRespawn(this);
+            Stats.CurrentHealth = Stats.HealthPoints.Total;
+            Stats.CurrentMana = Stats.HealthPoints.Total;
             IsDead = false;
             RespawnTimer = -1;
         }
@@ -317,15 +320,15 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 	    public void Recall(ObjAIBase owner)
         {
             var spawnPos = GetRespawnPosition();
-            _game.PacketNotifier.NotifyTeleport(owner, spawnPos.X, spawnPos.Y);
+            Game.PacketNotifier.NotifyTeleport(owner, spawnPos.X, spawnPos.Y);
         }
 
-        public void setSkillPoints(int _skillPoints)
+        public void SetSkillPoints(int _skillPoints)
         {
             _skillPoints = (short)_skillPoints;
         }
 
-        public int getChampionHash()
+        public int GetChampionHash()
         {
             var szSkin = "";
 
@@ -351,20 +354,20 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             return hash;
         }
 
-        public override bool isInDistress()
+        public override bool IsInDistress()
         {
             return DistressCause != null;
         }
 
-        public short getSkillPoints()
+        public short GetSkillPoints()
         {
             return _skillPoints;
         }
 
         public bool LevelUp()
         {
-            var stats = GetStats();
-            var expMap = _game.Map.MapGameScript.ExpToLevelUp;
+            var stats = Stats;
+            var expMap = Game.Map.MapGameScript.ExpToLevelUp;
             if (stats.GetLevel() >= expMap.Count)
                 return false;
             if (stats.Experience < expMap[stats.Level])
@@ -372,43 +375,43 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
             while (stats.Level < expMap.Count && stats.Experience >= expMap[stats.Level])
             {
-                GetStats().LevelUp();
-                _logger.LogCoreInfo("Champion " + Model + " leveled up to " + stats.Level);
+                Stats.LevelUp();
+                Logger.LogCoreInfo("Champion " + Model + " leveled up to " + stats.Level);
                 _skillPoints++;
             }
             return true;
         }
 
-        public InventoryManager getInventory()
+        public InventoryManager GetInventory()
         {
             return Inventory;
         }
 
-        public override void die(Unit killer)
+        public override void Die(Unit killer)
         {
-            RespawnTimer = 5000 + GetStats().Level * 2500;
-            _game.ObjectManager.StopTargeting(this);
+            RespawnTimer = 5000 + Stats.Level * 2500;
+            Game.ObjectManager.StopTargeting(this);
 
-            _game.PacketNotifier.NotifyUnitAnnounceEvent(UnitAnnounces.Death, this, killer);
+            Game.PacketNotifier.NotifyUnitAnnounceEvent(UnitAnnounces.DEATH, this, killer);
 
             var cKiller = killer as Champion;
 
             if (cKiller == null && _championHitFlagTimer > 0)
             {
-                cKiller = _game.ObjectManager.GetObjectById(_playerHitId) as Champion;
-                _logger.LogCoreInfo("Killed by turret, minion or monster, but still  give gold to the enemy.");
+                cKiller = Game.ObjectManager.GetObjectById(_playerHitId) as Champion;
+                Logger.LogCoreInfo("Killed by turret, minion or monster, but still  give gold to the enemy.");
             }
 
             if (cKiller == null)
             {
-                _game.PacketNotifier.NotifyChampionDie(this, killer, 0);
+                Game.PacketNotifier.NotifyChampionDie(this, killer, 0);
                 return;
             }
 
             cKiller.ChampionGoldFromMinions = 0;
 
-            float gold = _game.Map.MapGameScript.GetGoldFor(this);
-            _logger.LogCoreInfo(
+            float gold = Game.Map.MapGameScript.GetGoldFor(this);
+            Logger.LogCoreInfo(
                 "Before: getGoldFromChamp: {0} Killer: {1} Victim {2}",
                 gold,
                 cKiller.KillDeathCounter,
@@ -429,36 +432,36 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
 
             if (gold > 0)
             {
-                _game.PacketNotifier.NotifyChampionDie(this, cKiller, 0);
+                Game.PacketNotifier.NotifyChampionDie(this, cKiller, 0);
                 return;
             }
 
-            if (_game.Map.MapGameScript.IsKillGoldRewardReductionActive
-                && _game.Map.MapGameScript.HasFirstBloodHappened)
+            if (Game.Map.MapGameScript.IsKillGoldRewardReductionActive
+                && Game.Map.MapGameScript.HasFirstBloodHappened)
             {
                 gold -= gold * 0.25f;
                 //CORE_INFO("Still some minutes for full gold reward on champion kills");
             }
 
-            if (!_game.Map.MapGameScript.HasFirstBloodHappened)
+            if (!Game.Map.MapGameScript.HasFirstBloodHappened)
             {
                 gold += 100;
-                _game.Map.MapGameScript.HasFirstBloodHappened = true;
+                Game.Map.MapGameScript.HasFirstBloodHappened = true;
             }
 
-            _game.PacketNotifier.NotifyChampionDie(this, cKiller, (int)gold);
+            Game.PacketNotifier.NotifyChampionDie(this, cKiller, (int)gold);
 
-            cKiller.GetStats().Gold = cKiller.GetStats().Gold + gold;
-            _game.PacketNotifier.NotifyAddGold(cKiller, this, gold);
+            cKiller.Stats.Gold = cKiller.Stats.Gold + gold;
+            Game.PacketNotifier.NotifyAddGold(cKiller, this, gold);
 
             //CORE_INFO("After: getGoldFromChamp: %f Killer: %i Victim: %i", gold, cKiller.killDeathCounter,this.killDeathCounter);
 
-            _game.ObjectManager.StopTargeting(this);
+            Game.ObjectManager.StopTargeting(this);
         }
 
-        public override void onCollision(GameObject collider)
+        public override void OnCollision(GameObject collider)
         {
-            base.onCollision(collider);
+            base.OnCollision(collider);
             if (collider == null)
             {
                 //CORE_INFO("I bumped into a wall!");

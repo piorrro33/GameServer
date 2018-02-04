@@ -40,7 +40,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketHandlers
                 case MoveType.STOP:
                     //TODO anticheat, currently it trusts client 100%
 
-                    peerInfo.Champion.setPosition(request.x, request.y);
+                    peerInfo.Champion.SetPosition(request.x, request.y);
                     float x = ((request.x) - _game.Map.NavGrid.MapWidth) / 2;
                     float y = ((request.y) - _game.Map.NavGrid.MapHeight) / 2;
 

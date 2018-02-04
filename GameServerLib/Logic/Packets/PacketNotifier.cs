@@ -81,14 +81,14 @@ namespace LeagueSandbox.GameServer.Logic.Packets
             switch (inhibitor.getState())
             {
                 case InhibitorState.Dead:
-                    announce = new UnitAnnounce(UnitAnnounces.InhibitorDestroyed, inhibitor, killer, assists);
+                    announce = new UnitAnnounce(UnitAnnounces.INHIBITOR_DESTROYED, inhibitor, killer, assists);
                     _game.PacketHandlerManager.broadcastPacket(announce, Channel.CHL_S2C);
 
                     var anim = new InhibitorDeathAnimation(inhibitor, killer);
                     _game.PacketHandlerManager.broadcastPacket(anim, Channel.CHL_S2C);
                     break;
                 case InhibitorState.Alive:
-                    announce = new UnitAnnounce(UnitAnnounces.InhibitorSpawned, inhibitor, killer, assists);
+                    announce = new UnitAnnounce(UnitAnnounces.INHIBITOR_SPAWNED, inhibitor, killer, assists);
                     _game.PacketHandlerManager.broadcastPacket(announce, Channel.CHL_S2C);
                     break;
             }
@@ -98,7 +98,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets
 
         public void NotifyInhibitorSpawningSoon(Inhibitor inhibitor)
         {
-            var packet = new UnitAnnounce(UnitAnnounces.InhibitorAboutToSpawn, inhibitor);
+            var packet = new UnitAnnounce(UnitAnnounces.INHIBITOR_ABOUT_TO_SPAWN, inhibitor);
             _game.PacketHandlerManager.broadcastPacket(packet, Channel.CHL_S2C);
         }
 
@@ -130,7 +130,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets
             }
             else
             {
-                u.setPosition(_x, _y);
+                u.SetPosition(_x, _y);
 
                 //TeleportRequest first(u.NetId, u.teleportToX, u.teleportToY, true);
                 //sendPacket(currentPeer, first, Channel.CHL_S2C);

@@ -39,12 +39,12 @@ namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
                 _playerManager.GetClientInfoByChampion(currentChampion),
                 currentChampion.NetId
             );
-            c.setPosition(
+            c.SetPosition(
                 _playerManager.GetPeerInfo(peer).Champion.X,
                 _playerManager.GetPeerInfo(peer).Champion.Y
             );
             c.Model = split[1]; // trigger the "modelUpdate" proc
-            c.SetTeam(_playerManager.GetPeerInfo(peer).Champion.Team);
+            c.Team = _playerManager.GetPeerInfo(peer).Champion.Team;
             _game.ObjectManager.RemoveObject(_playerManager.GetPeerInfo(peer).Champion);
             _game.ObjectManager.AddObject(c);
             _playerManager.GetPeerInfo(peer).Champion = c;

@@ -29,7 +29,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             uint netId = 0
         ) : base(model, new Stats(), 40, x, y, 0, netId)
         {
-            SetTeam(TeamId.TEAM_NEUTRAL);
+            Team = TeamId.TEAM_NEUTRAL;
 
             var teams = Enum.GetValues(typeof(TeamId)).Cast<TeamId>();
             foreach (var team in teams)
@@ -47,7 +47,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         public override void OnAdded()
         {
             base.OnAdded();
-            _game.PacketNotifier.NotifySpawn(this);
+            Game.PacketNotifier.NotifySpawn(this);
         }
     }
 }

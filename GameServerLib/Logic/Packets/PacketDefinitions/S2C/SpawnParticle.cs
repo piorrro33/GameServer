@@ -11,7 +11,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketDefinitions.S2C
             : base(PacketCmd.PKT_S2C_SpawnParticle, particle.Owner.NetId)
         {
             buffer.Write((byte)1); // number of particles
-            buffer.Write((uint)particle.Owner.getChampionHash());
+            buffer.Write((uint)particle.Owner.GetChampionHash());
             buffer.Write((uint)HashFunctions.HashString(particle.Name));
             buffer.Write((int)0x00000020); // flags ?
 

@@ -27,7 +27,7 @@ namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
                 ShowSyntax();
             }
             if (float.TryParse(split[1], out speed))
-                _playerManager.GetPeerInfo(peer).Champion.GetStats().MoveSpeed.FlatBonus = speed;
+                _playerManager.GetPeerInfo(peer).Champion.Stats.MoveSpeed.FlatBonus = speed;
             else
                 ChatCommandManager.SendDebugMsgFormatted(DebugMsgType.ERROR, "Incorrect parameter");
         }

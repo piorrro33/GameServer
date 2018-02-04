@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using LeagueSandbox.GameServer.Core.Logic;
 
 namespace LeagueSandbox.GameServer.Logic.GameObjects
 {
@@ -7,7 +8,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
     {
         public float X { get; protected set; }
         public float Y { get; protected set; }
-
+        
         public virtual bool IsSimpleTarget { get { return true; } }
 
         public Target(float x, float y)

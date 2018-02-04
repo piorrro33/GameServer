@@ -27,7 +27,7 @@ namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
                 ShowSyntax();
             }
             else if (float.TryParse(split[1], out gold))
-                _playerManager.GetPeerInfo(peer).Champion.GetStats().Gold = gold;
+                _playerManager.GetPeerInfo(peer).Champion.Stats.Gold = gold;
         }
     }
 }

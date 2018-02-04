@@ -16,7 +16,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             uint netId = 0
         ) : base(model, new Stats(), 40, x, y, 0, netId)
         {
-            SetTeam(owner.Team);
+            Team = owner.Team;
 
             Owner = owner;
 
@@ -30,10 +30,10 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         public override void OnAdded()
         {
             base.OnAdded();
-            _game.PacketNotifier.NotifySpawn(this);
+            Game.PacketNotifier.NotifySpawn(this);
         }
 
-        public override bool isInDistress()
+        public override bool IsInDistress()
         {
             return DistressCause != null;
         }

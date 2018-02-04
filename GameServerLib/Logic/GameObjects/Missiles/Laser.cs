@@ -34,9 +34,9 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
                 return;
             }
 
-            if (_originSpell.state != SpellState.STATE_CASTING)
+            if (_originSpell.State != SpellState.STATE_CASTING)
             {
-                var objects = _game.ObjectManager.GetObjects().Values;
+                var objects = Game.ObjectManager.GetObjects().Values;
                 foreach (var obj in objects)
                 {
                     var u = obj as Unit;
@@ -46,19 +46,19 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
                     }
                 }
 
-                setToRemove();
+                SetToBeRemoved();
             }
         }
 
-        public override void setToRemove()
+        public override void SetToBeRemoved()
         {
             if (Target != null && !Target.IsSimpleTarget)
             {
-                (Target as GameObject).decrementAttackerCount();
+                (Target as GameObject).DecrementAttackerCount();
             }
 
-            Owner.decrementAttackerCount();
-            toRemove = true;
+            Owner.DecrementAttackerCount();
+            ToBeRemoved = true;
         }
 
         protected override void CheckFlagsForUnit(Unit unit)
@@ -111,7 +111,7 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             var attackableUnit = unit as AttackableUnit;
             if (attackableUnit != null)
             {
-                _originSpell.applyEffects(attackableUnit, this);
+                _originSpell.ApplyEffects(attackableUnit, this);
             }
         }
 

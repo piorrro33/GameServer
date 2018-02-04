@@ -14,13 +14,13 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketDefinitions.S2C
             buffer.Write(Environment.TickCount); // syncID
             buffer.Write((byte)0); // Unk
             buffer.Write((short)0x66); // Buffer size from here
-            buffer.Write((int)s.getId()); // Spell hash, for example hash("EzrealMysticShot")
+            buffer.Write((int)s.ID); // Spell hash, for example hash("EzrealMysticShot")
             buffer.Write((uint)spellNetId); // Spell net ID
             buffer.Write((byte)(s.Level - 1));
             buffer.Write((float)1.0f); // attackSpeedMod
             buffer.Write((uint)s.Owner.NetId);
             buffer.Write((uint)s.Owner.NetId);
-            buffer.Write((int)s.Owner.getChampionHash());
+            buffer.Write((int)s.Owner.GetChampionHash());
             buffer.Write((uint)futureProjNetId); // The projectile ID that will be spawned
             buffer.Write((float)x);
             buffer.Write((float)m.NavGrid.GetHeightAtLocation(x, y));
@@ -32,7 +32,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketDefinitions.S2C
             buffer.Write((float)s.SpellData.GetCastTime()); // designerCastTime
             buffer.Write((float)0.0f); // extraTimeForCast
             buffer.Write((float)s.SpellData.GetCastTime() /*+ s.ChannelTime*/); // designerTotalTime
-            buffer.Write((float)s.getCooldown());
+            buffer.Write((float)s.Cooldown);
             buffer.Write((float)0.0f); // startCastTime
             buffer.Write((byte)0); // flags (isAutoAttack, secondAttack, forceCastingOrChannelling, mShouldOverrideCastPosition)
             buffer.Write((byte)s.Slot);

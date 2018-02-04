@@ -31,8 +31,8 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketHandlers
                 return false;
 
             var champion = _playerManager.GetPeerInfo(peer).Champion;
-            var stats = champion.GetStats();
-            var inventory = champion.getInventory();
+            var stats = champion.Stats;
+            var inventory = champion.GetInventory();
             var recipeParts = inventory.GetAvailableItems(itemTemplate.Recipe);
             var price = itemTemplate.TotalPrice;
             Item i;

@@ -17,28 +17,23 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
             Stats.CurrentHealth = 5500;
             Stats.HealthPoints.BaseValue = 5500;
 
-            SetTeam(team);
+            Team = team;
         }
 
-        public override void die(Unit killer)
+        public override void Die(Unit killer)
         {
-            _game.Stop();
-            _game.PacketNotifier.NotifyGameEnd(this);
+            Game.Stop();
+            Game.PacketNotifier.NotifyGameEnd(this);
         }
 
-        public override void refreshWaypoints()
-        {
-
-        }
-
-        public override void setToRemove()
+        public override void RefreshWaypoints()
         {
 
         }
 
-        public override float getMoveSpeed()
+        public override void SetToBeRemoved()
         {
-            return 0;
+
         }
     }
 }

@@ -44,8 +44,8 @@ namespace LeagueSandbox.GameServer.Core.Logic
         public PacketNotifier PacketNotifier { get; private set; }
         public PacketHandlerManager PacketHandlerManager { get; private set; }
         public Config Config { get; protected set; }
-        protected const int PEER_MTU = 996;
-        protected const double REFRESH_RATE = 1000.0 / 30.0; // 30 fps
+        private const int PEER_MTU = 996;
+        private const double REFRESH_RATE = 1000.0 / 30.0; // 30 fps
         private Logger _logger;
         // Object managers
         private readonly ItemManager _itemManager;
@@ -252,7 +252,7 @@ namespace LeagueSandbox.GameServer.Core.Logic
             {
                 if (!peerinfo.IsDisconnected)
                 {
-                    PacketNotifier.NotifyUnitAnnounceEvent(UnitAnnounces.SummonerDisconnected, peerinfo.Champion);
+                    PacketNotifier.NotifyUnitAnnounceEvent(UnitAnnounces.SUMMONER_DISCONNECTED, peerinfo.Champion);
                 }
                 peerinfo.IsDisconnected = true;
             }

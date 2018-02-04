@@ -33,10 +33,10 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketHandlers
                 _playerManager.GetPeerInfo(peer).Champion.NetId,
                 skillUpPacket.skill,
                 (byte)s.Level,
-                (byte)s.Owner.getSkillPoints()
+                (byte)s.Owner.GetSkillPoints()
             );
             _game.PacketHandlerManager.sendPacket(peer, skillUpResponse, Channel.CHL_GAMEPLAY);
-            _playerManager.GetPeerInfo(peer).Champion.GetStats().setSpellEnabled(skillUpPacket.skill, true);
+            _playerManager.GetPeerInfo(peer).Champion.Stats.setSpellEnabled(skillUpPacket.skill, true);
 
             return true;
         }

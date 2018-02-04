@@ -19,21 +19,16 @@ namespace LeagueSandbox.GameServer.Logic.GameObjects
         {
             Owner = owner;
 
-            SetTeam(team);
+            Team = team;
             Stats.Range.BaseValue = 905.0f;
         }
         public override void OnAdded()
         {
             base.OnAdded();
-            _game.PacketNotifier.NotifySpawn(this);
+            Game.PacketNotifier.NotifySpawn(this);
         }
-        public override void refreshWaypoints()
+        public override void RefreshWaypoints()
         {
-        }
-
-        public override float getMoveSpeed()
-        {
-            return 0;
         }
     }
 }

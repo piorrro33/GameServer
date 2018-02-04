@@ -77,7 +77,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets.PacketHandlers
                         }
                     }
                     peerInfo.IsDisconnected = false;
-                    _game.PacketNotifier.NotifyUnitAnnounceEvent(UnitAnnounces.SummonerReconnected, peerInfo.Champion);
+                    _game.PacketNotifier.NotifyUnitAnnounceEvent(UnitAnnounces.SUMMONER_RECONNECTED, peerInfo.Champion);
 
                     // Send the initial game time sync packets, then let the map send another
                     float gameTime = _game.GameTime / 1000.0f;

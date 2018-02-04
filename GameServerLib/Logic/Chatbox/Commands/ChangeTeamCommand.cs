@@ -34,7 +34,7 @@ namespace LeagueSandbox.GameServer.Logic.Chatbox.Commands
             }
 
             var team = CustomConvert.ToTeamId(t);
-            _playerManager.GetPeerInfo(peer).Champion.SetTeam(team);
+            _playerManager.GetPeerInfo(peer).Champion.Team = team;
         }
     }
 }

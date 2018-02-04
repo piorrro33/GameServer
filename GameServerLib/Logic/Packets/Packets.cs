@@ -2370,8 +2370,8 @@ namespace LeagueSandbox.GameServer.Logic.Packets
         public SetHealth(Unit u) : base(PacketCmd.PKT_S2C_SetHealth, u.NetId)
         {
             buffer.Write((short)0x0000); // unk,maybe flags for physical/magical/true dmg
-            buffer.Write((float)u.GetStats().HealthPoints.Total);
-            buffer.Write((float)u.GetStats().CurrentHealth);
+            buffer.Write((float)u.Stats.HealthPoints.Total);
+            buffer.Write((float)u.Stats.CurrentHealth);
         }
 
         public SetHealth(uint itemHash) : base(PacketCmd.PKT_S2C_SetHealth, itemHash)
@@ -2736,9 +2736,9 @@ namespace LeagueSandbox.GameServer.Logic.Packets
             var stats = new Dictionary<MasterMask, Dictionary<FieldMask, float>>();
 
             if (partial)
-                stats = u.GetStats().GetUpdatedStats();
+                stats = u.Stats.GetUpdatedStats();
             else
-                stats = u.GetStats().GetAllStats();
+                stats = u.Stats.GetAllStats();
             var orderedStats = stats.OrderBy(x => x.Key);
 
             buffer.Write(Environment.TickCount); // syncID
@@ -2759,13 +2759,13 @@ namespace LeagueSandbox.GameServer.Logic.Packets
                 foreach (var stat in orderedGroup)
                 {
                     fieldMask |= (uint)stat.Key;
-                    size += u.GetStats().getSize(group.Key, stat.Key);
+                    size += u.Stats.getSize(group.Key, stat.Key);
                 }
                 buffer.Write((uint)fieldMask);
                 buffer.Write((byte)size);
                 foreach (var stat in orderedGroup)
                 {
-                    size = u.GetStats().getSize(group.Key, stat.Key);
+                    size = u.Stats.getSize(group.Key, stat.Key);
                     switch (size)
                     {
                         case 1:
@@ -2947,7 +2947,7 @@ namespace LeagueSandbox.GameServer.Logic.Packets
     {
         public LevelUp(Champion c) : base(PacketCmd.PKT_S2C_LevelUp, c.NetId)
         {
-            buffer.Write(c.GetStats().Level);
+            buffer.Write(c.Stats.Level);
             buffer.Write(c.getSkillPoints());
         }
     }
